@@ -52,7 +52,7 @@ head(insurance)
 ```
 ## Step 1-c. Use model.matrix() function to transform the data from 1-b above to create another data set that uses dummy variables in place of categorical
 variables. This transformation is needed to build the K-means cluster and neural network model later. Then, verify that the first column has only ones (1)
-as values, and then discard the first column as it does not have any meaning on future analysis.
+as values, and discard the first column as it does not contribute to future analysis.
 
 ### Convert the data to matrix using **model.matrix() function**.
 ```{r}

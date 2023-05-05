@@ -1,7 +1,7 @@
 # Predictive Models for Insurance Charges
-In this project, we will analyze data to build various predictive models to predict the insurance change of an individual based on 'Age', 'Sex', 'BMI', 'Number of Children', 'Smoker status', ' Region of residence', 'Current Insurance Charges' as features/predictors.   
-We will randomly split the data into training (2/3rd of the data) and testing (1/3rd of the data) data. We will then create multiple "linear regression model", "regression tree model", "random forest model", "support vector machine (SVM) model", "K-means cluster analysis" and "neural network model" using the training data. We will then calculate the Mean Square Error (MSE) value of each of the models using out of sample (testing) data and select the model with the lowest MSE as best model to predict the insurance charge.  
-This is a relatively small size data for easy demonstration, but the process can be applied to a real life data with millions of rows. 
+In this project, we will analyze data to build various predictive models to predict the insurance change of an individual. 
+We will randomly split the data into training (2/3rd of the data) and testing (1/3rd of the data) data. We will then create multiple "linear regression model", "regression tree model", "random forest model", "support vector machine (SVM)", "K-means cluster analysis" and "neural network model" using the training data. We will then calculate the Mean Square Error (MSE) value of each of the models using out of sample (testing) data and select the model with the lowest MSE as best model to predict the insurance charge.  
+This is a relatively small size data for easy demonstration, but the process can be applied to a larger size data as well. 
 
 **Analysis Flow:**    
 **STEP 1. DATA PREPARATION**  

@@ -50,7 +50,9 @@ insurance$charges = log(insurance$charges)
 ```{r}
 head(insurance)
 ```
-## Step 1-c. Use model.matrix() function to transform the data from 1-b above to create another data set that uses dummy variables in place of categorical variables. This transformation is needed to build the K-means cluster and neural network model later. Then, verify that the first column has only ones (1) as values, and then discard the first column as it does not have any meaning on future analysis.
+## Step 1-c. Use model.matrix() function to transform the data from 1-b above to create another data set that uses dummy variables in place of categorical
+variables. This transformation is needed to build the K-means cluster and neural network model later. Then, verify that the first column has only ones (1)
+as values, and then discard the first column as it does not have any meaning on future analysis.
 
 ### Convert the data to matrix using **model.matrix() function**.
 ```{r}
@@ -267,7 +269,9 @@ train.insurance.cv <- cv.tree(tree.train)
 plot(train.insurance.cv$size, train.insurance.cv$dev, ttpe = "b")
 ```
 
-### Looking at the graph, it seems that the optimal tree size is 4. Best tree is the tree with the lowest test error (y value of the dev vs size graph). Even though the tree of size 8 has the lowest test error, the test error is not much better than the tree of size 4. Model with tree size 8 will have low bias as it captures variation on most of the training data while doing so it will over fit the model and the model will also be more complex than tree of size 4. Because of these reasons, I will select the tree size of 4 as the optimal model.
+### Looking at the graph, it seems that the optimal tree size is 4. Best tree is the tree with the lowest test error (y value of the dev vs size graph).
+Even though the tree of size 8 has the lowest test error, the test error is not much better than the tree of size 4. Model with tree size 8 will have low
+bias as it captures variation on most of the training data while doing so it will over fit the model and the model will also be more complex than tree of size 4. Because of these reasons, I will select the tree size of 4 as the optimal model.
 
 ## Step 3-c. Now, I will prune the tree using the optinal size (4) determined above.
 ```{r}
@@ -446,7 +450,8 @@ library(factoextra)
 fviz_nbclust(scale.training.matrix, kmeans, method = "gap_stat", iter.max=20)
 ```
 
-### As shown on the graph above, optimal level of cluster is 5. This is based on the change in the gap statistic vs the number of clusters. Increasing the number of clusters beyond 5 did not increase the Gap statistic significantly.
+### As shown on the graph above, optimal level of cluster is 5. This is based on the change in the gap statistic vs the number of clusters. Increasing the
+number of clusters beyond 5 did not increase the Gap statistic significantly.
 
 ## Step 6-d.  Perform k-means clustering using the optimal number of clusters found in step 6.c. Set parameter nstart = 25
 
@@ -466,7 +471,8 @@ fviz_cluster(km.res, data = scale.training.matrix, geom = "point")
 
 # **STEP 7. BUILD THE NEURAL NETWORK MODEL**
 
-## Step 7-a.  Using the training data set created in step 1.f (matrix tranformed), we will create a neural network model where the response is 'charges' and the predictors are 'age', 'sex', 'bmi', 'children', 'smoker', 'region'. We will use 1 hidden layer with 1 neuron.
+## Step 7-a.  Using the training data set created in step 1.f (matrix tranformed), we will create a neural network model where the response is 'charges'
+and the predictors are 'age', 'sex', 'bmi', 'children', 'smoker', 'region'. We will use 1 hidden layer with 1 neuron.
 
 ### Load the package "neuralnet" in to R memory.
 ```{r}
@@ -535,7 +541,9 @@ print(Test.result, digits = 4)
 
 ## **As the Random Forest model has the lowest MSE (calculated using the test data), this model is the best model among the models above.**
 
-## **But, I would recommend Regression tree model (Step 3-d) as the best model to use to explain the label values based on features as it is straight forward and simple to grasp. Disadvantage of this model over other models is that it is not the best model in terms of accuracy of prediction as shown above with the calculated test error (MSE).** 
+## **But, I would recommend Regression tree model (Step 3-d) as the best model to use to explain the label values based on features as it is straight
+forward and simple to grasp. Disadvantage of this model over other models is that it is not the best model in terms of accuracy of prediction as shown
+above with the calculated test error (MSE).** 
 
 ## Predict the insurance charges of new individuals.
 

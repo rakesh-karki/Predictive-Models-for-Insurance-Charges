@@ -432,7 +432,7 @@ scale.training.matrix<-scale(training.matrix)
 head(scale.training.matrix)
 ```
 
-## Step 6-b. Convert the standardized inputs to a FataFrame using the as.data.frame() function.
+## Step 6-b. Convert the standardized inputs to a DataFrame using the as.data.frame() function.
 ```{r}
 scale.training.matrix<-as.data.frame(scale.training.matrix)
 ```
@@ -540,10 +540,6 @@ print(Test.result, digits = 4)
 ```
 
 ## **As the Random Forest model has the lowest MSE (calculated using the test data), this model is the best model among the models above.**
-
-## **But, I would recommend Regression tree model (Step 3-d) as the best model to use to explain the label values based on features as it is straight
-forward and simple to grasp. Disadvantage of this model over other models is that it is not the best model in terms of accuracy of prediction as shown
-above with the calculated test error (MSE).** 
 
 ## Predict the insurance charges of new individuals.
 

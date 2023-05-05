@@ -11,7 +11,7 @@ We will randomly split the data into training (2/3rd of the data) and testing (1
 "regression tree model", "random forest model", "support vector machine (SVM)", "K-means cluster analysis" and "neural network model" using the
 training data. We will then calculate the Mean Square Error (MSE) value of each of the models using out of sample (testing) data and select the model with
 the lowest MSE as best model to predict the insurance charge.  
-This is a relatively small size data for easy demonstration, but the process can be applied to a large size. 
+This is a relatively small size data for easy demonstration, but the process can be applied to a large size as well. 
 
 **Analysis Flow:**    
 **STEP 1. DATA PREPARATION**  

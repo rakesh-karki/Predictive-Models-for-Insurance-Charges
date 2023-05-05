@@ -33,7 +33,7 @@ knitr::opts_chunk$set(include=TRUE, error=FALSE, message=FALSE,echo = TRUE)
 ################################################################################  
 # **STEP 1.  DATA PREPARATION**
 
-## Step 1-a. Load the table **insurance.csv** into R memory and then preview the data to understand the structure.
+## Step 1-a. Load the table **insurance.csv** into R and then preview the data to understand the structure.
 ```{r}
 library(readr)
 insurance <- read_csv("insurance.csv")

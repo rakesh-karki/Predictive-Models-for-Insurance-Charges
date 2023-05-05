@@ -7,14 +7,14 @@ output: pdf_document
 **INTRODUCTION:**  
 In this project, we will analyze data to build various predictive models to predict the insurance change of an individual based on 'Age', 'Sex', 'BMI', 'Number of Children', 'Smoker status', ' Region of residence', 'Current Insurance Charges' as features/predictors.   
 We will randomly split the data into training (2/3rd of the data) and testing (1/3rd of the data) data. We will then create multiple "linear regression model", "regression tree model", "random forest model", "support vector machine (SVM) model", "K-means cluster analysis" and "neural network model" using the training data. We will then calculate the Mean Square Error (MSE) value of each of the models using out of sample (testing) data and select the model with the lowest MSE as best model to predict the insurance charge.  
-This is a relatively small size data for easy demonstration, but the process can be applied to a real life data with millions of rows. 
+This is a relatively small size data for easy demonstration, but the process can be applied to a large size. 
 
 **Analysis Flow:**    
 **STEP 1. DATA PREPARATION**  
 **STEP 2. BUILD A MULTIPLE LINEAR REGRESSION MODEL**  
 **STEP 3. BUILD A REGRESSION TREE MODEL**  
 **STEP 4. BUILD A RANDOM FOREST MODEL**  
-**STEP 5. BUILD A SUPPORT VECTOR MACHINE (SVM) MODEL**  
+**STEP 5. BUILD A SUPPORT VECTOR MACHINE (SVM)**  
 **STEP 6. PERFORM THE K-MEANS CLUSTER ANALYSIS**  
 **STEP 7. BUILD THE NEURAL NETWORK MODEL**  
 **STEP 8. PUTTING IT ALL TOGETHER**  
@@ -29,7 +29,7 @@ knitr::opts_chunk$set(include=TRUE, error=FALSE, message=FALSE,echo = TRUE)
 ################################################################################  
 # **STEP 1.  DATA PREPARATION**
 
-## Step 1-a. We will start by loading the DataFrame **insurance.csv** into R memory and then preview the data to understand the structure.
+## Step 1-a. Load the table **insurance.csv** into R memory and then preview the data to understand the structure.
 ```{r}
 library(readr)
 insurance <- read_csv("insurance.csv")
@@ -37,16 +37,16 @@ dim(insurance)       # check the data size: rowsXcolumns
 head(insurance)      # preview first few rows
 ```
 
-## Step 1-b.  Now, we will log transform the label variable 'charges' which helps the analysis by converting the skewed data towards normal distribution. 
+## Step 1-b.  Log transform the label variable 'charges'. This helps the analysis by converting the skewed data towards normal distribution. 
 ```{r}
 insurance$charges = log(insurance$charges)
 ```
 
-### Let's check how the data looks after the log transformation.
+### Check the data after the log transformation.
 ```{r}
 head(insurance)
 ```
-## Step 1-c. In the steps below, use model.matrix() function to transform the data from 1-b above to create another data set that uses dummy variables in place of categorical variables. This transformation is needed to build the K-means cluster and neural network model later. We will then verify that the first column has only ones (1) as values, and then discard the first column as it does not have any meaning on future analysis.
+## Step 1-c. Use model.matrix() function to transform the data from 1-b above to create another data set that uses dummy variables in place of categorical variables. This transformation is needed to build the K-means cluster and neural network model later. Then, verify that the first column has only ones (1) as values, and then discard the first column as it does not have any meaning on future analysis.
 
 ### Convert the data to matrix using **model.matrix() function**.
 ```{r}
@@ -62,7 +62,7 @@ head(insurance.matrix)
 insurance.matrix<- insurance.matrix[, -1]
 head(insurance.matrix)
 ```
-## Step 1-d. Use the **sample() function** with set.seed = 1 to generate row indexes for the training and tests sets, with 2/3 of the row indexes for the training set and 1/3 for the test set.
+## Step 1-d. Use the **sample() function** to generate row indexes for the training and tests sets: 2/3 of the row indexes for the training set and 1/3 for the test set.
 
 ### Set the seed for result reproducibility.
 ```{r}
@@ -123,21 +123,21 @@ head(testing.matrix)
 ################################################################################
 # **STEP 2.  BUILD A MULTIPLE LINEAR REGRESSION MODEL**
 
-## Step 2-a.  Here, we will build a multiple linear regression model with 'charges' as the response/label and 'age', 'sex', 'bmi', 'children', 'smoker', and 'region' as predictor/feature variables. We will then print out the result using the summary() function. 
+## Step 2-a.  Here, I will build a multiple linear regression model with 'charges' as the response/label and 'age', 'sex', 'bmi', 'children', 'smoker', and 'region' as predictor/feature variables. I will then print out the result using the summary() function. 
 
-### First let's convert the categorical variables ('sex', 'smoker' and 'region') to factor.
+### First convert the categorical variables ('sex', 'smoker' and 'region') to factor.
 ```{r}
 insurance$sex<-factor(insurance$sex)
 insurance$smoker<-factor(insurance$smoker)
 insurance$region<-factor(insurance$region)
 ```
 
-### Now, let's build a multiple linear regression model with predictors and response as defined above using the training data and print out the result using the summary() function.
+### Then, build a multiple linear regression model with predictors and response as defined above using the training data and print out the result using the summary() function.
 ```{r}
 lm <- lm(charges ~ age + sex + bmi+ children +smoker + region, data = training.data)
 summary(lm)
 ```
-## Step 2-b. Let's check the relationship between the predictor variables and the response (find the coefficients).
+## Step 2-b. Check the relationship between the predictor variables and the response (find the coefficients).
 
 ### Coefficients of variables of the multiple linear regression model.
 ```{r}
@@ -146,7 +146,7 @@ lm$coefficients
 
 ### **As the coefficient of each variables are non zero, each predictors has effect on the response variable. The p values above (with 1 or more * sign) also show that effect of each of predictor variable is statistically significant.**
 
-## Step 2-c.  Now, let's perform best subset selection using the stepAIC() function from the "MASS" library and choose best model based on AIC. For the "direction" parameter in the stepAIC() method, we will set direction = "backward"
+## Step 2-c.  Now, perform best subset selection using the stepAIC() function from the "MASS" library and choose best model based on AIC. For the "direction" parameter in the stepAIC() method, I will set direction = "backward"
 
 ### Load package "MASS" into R memory.
 ```{r}
@@ -168,7 +168,7 @@ summary(lm.bwd)
 ```
 ### **As all of the variables are statistically significant based on P value above (confirmed again), the model should include all feature variables: 'age', 'sex', 'bmi', 'children', 'smoker' and 'region' as the predictors.**
 
-## Step 2-d.  Here, we will compute the MSE of the best model built in Step 2-c above based on AIC using Leave-One-Out Cross-Validation (LOOCV) by trainControl() and train() function of the library 'caret'. We will then calcuate the Mean Square Error (MSE) by squaring the reported RMSE.
+## Step 2-d.  Here, I will compute the MSE of the best model built in Step 2-c above based on AIC using Leave-One-Out Cross-Validation (LOOCV) by trainControl() and train() function of the library 'caret'. I will then calcuate the Mean Square Error (MSE) by squaring the reported RMSE.
 
 ### Load package 'caret' into R memory.
 ```{r}
@@ -186,13 +186,13 @@ model.lm1 <- train(charges ~ age + sex + bmi+ children +smoker + region, data = 
                trControl=train.control.lm1, method="lm")
 print(model.lm1)
 ```
-### Here, we will calculate MSE as square of RMSE calculated above.
+### Here, calculate MSE as square of RMSE calculated above.
 ```{r}
 MSE.lm1<- 0.4282153^2
 print(MSE.lm1)
 ```
 
-## Step 2-e.Now, let's calculate the MSE of the best model based on AIC using 10-fold Cross-Validation. Then calcualte the MSE.
+## Step 2-e.Now, calculate the MSE of the best model based on AIC using 10-fold Cross-Validation. Then calcualte the MSE.
 
 ### Create the trainControl method with 10-fold Cross-Validation.
 ```{r}
@@ -237,9 +237,9 @@ print(MSE.Test.lm)
 ################################################################################
 # **STEP 3. BUILD A REGRESSION TREE MODEL**
 
-## Step 3-a. Now, Let's build a regression tree model using function tree(), with 'charges' as the response variables and the 'age', 'sex', 'bmi', 'children', 'smoker', and 'region' as predictors.
+## Step 3-a. Now, Build a regression tree model using function tree(), with 'charges' as the response variables and the 'age', 'sex', 'bmi', 'children', 'smoker', and 'region' as predictors.
 
-### Start by loading the package "tree" into R memory.
+### Load the package "tree" into R memory.
 ```{r}
 library(tree)
 ```
@@ -251,7 +251,7 @@ tree.train<-tree(charges ~ age + sex + bmi+ children + smoker + region, insuranc
 print(tree.train)
 ```
 
-## Step 3-b.  Now, we will find the optimal tree using cross-validation and display the result graphically. We will then determine the best tree size.
+## Step 3-b.  Now, I will find the optimal tree using cross-validation and display the result graphically. will then determine the best tree size.
 
 ### Perform the cross-validation to choose the optimal tree.
 ```{r}
@@ -263,16 +263,16 @@ train.insurance.cv <- cv.tree(tree.train)
 plot(train.insurance.cv$size, train.insurance.cv$dev, ttpe = "b")
 ```
 
-### Looking at the graph, it seems that the optimal tree size is 4. Best tree is the tree with the lowest test error (y value of the dev vs size graph). Even though the tree of size 8 has the lowest test error, the test error is not much better than the tree of size 4. Model with tree size 8 will have low bias as it captures variation on most of the training data while doing so it will over fit the model and the model will also be more complex than tree of size 4. Because of these reasons, we will select the tree size of 4 as the optimal model.
+### Looking at the graph, it seems that the optimal tree size is 4. Best tree is the tree with the lowest test error (y value of the dev vs size graph). Even though the tree of size 8 has the lowest test error, the test error is not much better than the tree of size 4. Model with tree size 8 will have low bias as it captures variation on most of the training data while doing so it will over fit the model and the model will also be more complex than tree of size 4. Because of these reasons, I will select the tree size of 4 as the optimal model.
 
-## Step 3-c. Now, we will prune the tree using the optinal size (4) determined above.
+## Step 3-c. Now, I will prune the tree using the optinal size (4) determined above.
 ```{r}
 prune.train.insurance<- prune.tree(tree.train, best = 4)
 ```
 
-## Step 3-d. Now, let's visually display the best tree model with labels.
+## Step 3-d. Now, visually display the best tree model with labels.
 
-### As the variable 'charges' was log transformed at the beginning of the analysis, we will have to convert it back by using the exp() to make the predicted output meaningful.
+### As the variable 'charges' was log transformed at the beginning of the analysis, it needs to be converted it back by using the exp() to make the predicted output meaningful.
 
 ### i. Copy the pruned tree model to a new variable.
 ```{r}
@@ -285,7 +285,7 @@ copy.prune.train<-prune.train.insurance
 copy.prune.train$frame$yval<-exp(copy.prune.train$frame$yval)
 ```
 
-###  iii. Now, let's show our optimal  regression tree model.
+###  iii. Now, display the optimal  regression tree model.
 
 ```{r}
 library(tree)
@@ -314,20 +314,20 @@ print(MSE.Test.tree)
 ################################################################################
 # **STEP 4. BUILD A RANDOM FOREST MODEL**
 
-## Step 4-a.  Here, we will build a random forest model using function randomForest(), with 'charges' as the response variables and the 'age', 'sex', 'bmi', 'children', 'smoker', and 'region' as predictors.
+## Step 4-a.  Here, I will build a random forest model using function randomForest(), with 'charges' as the response variables and the 'age', 'sex', 'bmi', 'children', 'smoker', and 'region' as predictors.
 
-### Let's begin by loading the package "randomForest" into R memory.
+### Load the package "randomForest" into R memory.
 ```{r}
 library(randomForest)
 ```
 
-### Here, we will build the random forest model. 
+### Build the random forest model. 
 ```{r}
 rf.model <- randomForest(charges ~ age + sex + bmi+ children + smoker + region, 
             data = insurance, subset = training.rows, importance = TRUE)
 ```
 
-## Step 4-b. Now, let's calculate the MSE using the test data.
+## Step 4-b. Calculate the MSE using the test data.
 
 ### Predict insurance charge based using the test data.
 ```{r}
@@ -339,17 +339,17 @@ yhat.insurance.charges.rf <- predict(rf.model, newdata = insurance[-training.row
 test.insurance.charges <- insurance[-training.rows, "charges"]
 ```
 
-### Now, let's calculate the mean square error (MSE) with test data.
+### Calculate the mean square error (MSE) with test data.
 ```{r}
 MSE.Test.rf<- mean((test.insurance.charges$charges-yhat.insurance.charges.rf)^2)
 print(MSE.Test.rf)
 ```
 
-## Step 4-c.  Now, Let's extract variable importance measure using the importance() function.
+## Step 4-c.  Extract variable importance measure using the importance() function.
 ```{r}
 importance(rf.model)
 ```
-## Step 4-d. Here, we will plot the variable importance and identify the top 3 important predictors in this model.
+## Step 4-d. Plot the variable importance and identify the top 3 important predictors in this model.
 ```{r}
 varImpPlot(rf.model)
 ```
@@ -360,21 +360,21 @@ varImpPlot(rf.model)
 
 # **STEP 5. BUILD A SUPPORT VECTOR MACHINE (SVM) MODEL**
 
-## Step 5-a.  Let's build the SVM with 'charges' as the response variables and the 'age', 'sex', 'bmi', 'children', 'smoker', and 'region' as predictors. We will use the svm() function with radial kernel and gamma = 5 and cost = 50.
+## Step 5-a.  Build the SVM with 'charges' as the response variables and the 'age', 'sex', 'bmi', 'children', 'smoker', and 'region' as predictors. We will use the svm() function with radial kernel and gamma = 5 and cost = 50.
 
-### Let's begin by loading the package "e1071" into R memory.
+### Load the package "e1071" into R memory.
 ```{r}
 library(e1071)
 ```
 
-### Here, we will build the SVM model and print the model summary.
+### Build the SVM model and print the model summary.
 ```{r}
 SVM.fit<- svm(charges ~ age + sex + bmi+ children + smoker + region, data = training.data, 
               kernel= "radial", cost=50, gamma=5)
 summary(SVM.fit)
 ```
 
-## Step 5-b.  Now, let's perform a grid search to find the best model with potential cost: 1, 10, 50, 100 and potential gamma: 1,3 and 5 and potential kernel: "linear","polynomial","radial" and "sigmoid".
+## Step 5-b.  Perform a grid search to find the best model with potential cost: 1, 10, 50, 100 and potential gamma: 1,3 and 5 and potential kernel: "linear","polynomial","radial" and "sigmoid".
 
 ```{r, message = FALSE, warning=FALSE}
 tune.out<-tune(svm, charges ~ age + sex + bmi+ children + smoker + region, data = training.data, 
@@ -382,14 +382,14 @@ tune.out<-tune(svm, charges ~ age + sex + bmi+ children + smoker + region, data 
         list(cost=c(1,10,50,100), gamma=c(1,3,5)))
 ```
 
-## Step 5-c.  Let's print out the model results and identify the best model parameters.
+## Step 5-c.  Print out the model results and identify the best model parameters.
 ```{r}
 summary(tune.out)
 ```
 
 ### **As shown on the output, the best model is the model with cost value 1 and gamma value 1.**
 
-## Step 5-d.  Now, we will calcuate the MSE using the test data.
+## Step 5-d.  Now, calcuate the MSE using the test data.
 
 ### Predict the charges using the test data.
 ```{r}
@@ -401,7 +401,7 @@ Predicted.charges.svm<- predict(tune.out$best.model, newdata = test.data)
 test.insurance.charges<- insurance[-training.rows, "charges"]
 ```
 
-### Now, let's calcualte MSE with test data.
+### Calcualte MSE with test data.
 ```{r}
 MSE.Test.svm<-mean((test.insurance.charges$charges-Predicted.charges.svm)^2)
 print(MSE.Test.svm)
@@ -431,13 +431,13 @@ scale.training.matrix<-as.data.frame(scale.training.matrix)
 
 ## Step 6-c. Determine the optimal number of clusters.
 
-### Let's begin by loading the package "cluster" and "Factoextra" into R memory.
+### Begin by loading the package "cluster" and "Factoextra" into R memory.
 ```{r}
 library(cluster)
 library(factoextra)
 ```
 
-### Now, we will determine the optimal number of clusters. Use the gap_stat method and set iter.max=20.
+### Determine the optimal number of clusters. Use the gap_stat method and set iter.max=20.
 ```{r}
 fviz_nbclust(scale.training.matrix, kmeans, method = "gap_stat", iter.max=20)
 ```
@@ -464,18 +464,18 @@ fviz_cluster(km.res, data = scale.training.matrix, geom = "point")
 
 ## Step 7-a.  Using the training data set created in step 1.f (matrix tranformed), we will create a neural network model where the response is 'charges' and the predictors are 'age', 'sex', 'bmi', 'children', 'smoker', 'region'. We will use 1 hidden layer with 1 neuron.
 
-### Let's begin by loading package "neuralnet" in to R memory.
+### Load the package "neuralnet" in to R memory.
 ```{r}
 library(neuralnet)
 ```
 
-### Next, build the neural network model.
+### Build the neural network model.
 ```{r}
 nn.model<- neuralnet(charges~ age+sexmale+bmi+children+smokeryes+regionnorthwest+
     regionsoutheast+regionsouthwest, data = training.matrix, hidden=1)
 ```
 
-## Step 7-b.  Let's plot the neural network.
+## Step 7-b.  Plot the neural network.
 ```{r}
 plot(nn.model)
 ```
@@ -498,7 +498,7 @@ observ.test<- testing.matrix[ ,"charges"]
 head(observ.test)
 ```
 
-### Now, let's compute the Mean Square Error (MSE) using the test data.
+### Compute the Mean Square Error (MSE) using the test data.
 ```{r}
 MSE.Test.nm<-mean((observ.test-Predicted.charges.nm$net.result)^2)
 print(MSE.Test.nm)
@@ -523,7 +523,7 @@ Model.Type<-c("Multiple Linear Regression", "Regression Tree", "Random Forest",
 Test.MSE<- c(MSE.Test.lm, MSE.Test.tree, MSE.Test.rf, MSE.Test.svm, MSE.Test.nm)
 ```
 
-### Let's create a FataFrame with model type and MSE (round the MSE values to 4 decimal places).
+### Create a FataFrame with model type and MSE (round the MSE values to 4 decimal places).
 ```{r}
 Test.result<-data.frame(Model.Type, Test.MSE)
 print(Test.result, digits = 4)
@@ -533,7 +533,7 @@ print(Test.result, digits = 4)
 
 ## **But, I would recommend Regression tree model (Step 3-d) as the best model to use to explain the label values based on features as it is straight forward and simple to grasp. Disadvantage of this model over other models is that it is not the best model in terms of accuracy of prediction as shown above with the calculated test error (MSE).** 
 
-## Let's predict the insurance charges of new individuals.
+## Predict the insurance charges of new individuals.
 
 ```{r}
 age <- as.numeric(c(60, 20))
@@ -546,21 +546,21 @@ predict_df <- data.frame(age, sex, bmi, children, smoker, region)
 head(predict_df)
 ```
 
-###  Here, we will convert the predictor variables "sex", "smoker" and "region" to factor.
+###  Convert the predictor variables "sex", "smoker" and "region" to factor.
 ```{r}
 predict_df$sex<-factor(predict_df$sex)
 predict_df$smoker<-factor(predict_df$smoker)
 predict_df$region<-factor(predict_df$region)
 ```
 
-### Lets match the factor labels of predict_df factors with the respective variable in training data. Random forest may show error if the factor level does not match.
+### Match the factor labels of predict_df factors with the respective variable in training data. Random forest may show error if the factor level does not match.
 ```{r}
 levels(predict_df$sex) <- rf.model$forest$xlevels$sex
 levels(predict_df$smoker) <- rf.model$forest$xlevels$smoker
 levels(predict_df$region) <- rf.model$forest$xlevels$region
 ```
 
-## Now, let's predict the insurance charges based on feature variables. We will need to convert the log tranformed charges values back to actual charges by using exp() to get the actual predicted insurance charge.
+## Predict the insurance charges based on feature variables. I will need to convert the log tranformed charges values back to actual charges by using exp() to get the actual predicted insurance charge.
 
 ```{r}
 predict_insurance_charge <- exp(predict(rf.model, newdata = predict_df))
